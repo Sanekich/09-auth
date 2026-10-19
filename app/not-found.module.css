@@ -1,0 +1,15 @@
+.main {
+  flex: 1;
+  text-align: center;
+  padding: 80px 16px;
+}
+.title {
+  margin: 0 0 16px;
+  font-size: 36px;
+  color: #1a1a1a;
+}
+.description {
+  margin: 0;
+  font-size: 18px;
+  color: #444;
+}
