@@ -1,8 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { checkSession, getMe } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 import type { User } from "@/types/user";
 
 interface AuthContextValue {
@@ -14,6 +15,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
+  const setUser = useAuthStore((state) => state.setUser);
   const { data: isAuthenticated = false, isLoading: isSessionLoading } = useQuery({
     queryKey: ["session"],
     queryFn: checkSession,
@@ -26,6 +28,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    setUser(user ?? null);
+  }, [setUser, user]);
 
   return (
     <AuthContext.Provider
