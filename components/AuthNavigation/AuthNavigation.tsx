@@ -1,23 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { checkSession, getMe, logout } from "@/lib/api/clientApi";
+import { logout } from "@/lib/api/clientApi";
+import { useAuth } from "@/components/AuthProvider/AuthProvider";
 import css from "./AuthNavigation.module.css";
 
 export default function AuthNavigation() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { data: isAuthenticated, isLoading } = useQuery({
-    queryKey: ["session"],
-    queryFn: checkSession,
-  });
-  const { data: user } = useQuery({
-    queryKey: ["me"],
-    queryFn: getMe,
-    enabled: isAuthenticated === true,
-  });
+  const { user, isAuthenticated, isLoading } = useAuth();
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
     onSuccess: () => {
