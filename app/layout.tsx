@@ -10,8 +10,8 @@ const roboto = Roboto({
   weight: ["400", "500", "700"],
   variable: "--font-roboto",
   display: "swap",
-  subsets: ["latin"]
-} );
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "NoteHub",
@@ -31,17 +31,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-  modal,
-}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body className={roboto.variable}>
         <TanStackProvider>
           <Header />
           {children}
-          {modal}
           <Footer />
         </TanStackProvider>
       </body>

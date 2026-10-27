@@ -1,6 +1,6 @@
-# NoteHub — homework 07
+# NoteHub — Homework 09
 
-Next.js App Router routing extension for NoteHub.
+Authenticated NoteHub application built with Next.js App Router, TypeScript, Axios, TanStack Query, CSS Modules, and cookie-based authentication.
 
 ## Setup
 
@@ -10,20 +10,56 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Set `NEXT_PUBLIC_NOTEHUB_TOKEN` in `.env.local`.
+For local development, `.env.local` should contain:
 
-Routes:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+```
 
-- `/` — home page
-- `/notes/filter/all` — all notes
-- `/notes/filter/Work` — notes filtered by tag
-- `/notes/[id]` — note details
-
-The project includes catch-all tag filtering, parallel sidebar and modal routes, intercepting note preview routes, server-side TanStack Query prefetching, client hydration, CSS Modules, and TypeScript.
+The application calls its own `/api` route handlers. Those handlers forward requests and authentication cookies to the authenticated NoteHub backend at `https://notehub-api.goit.study`.
 
 ## Build
 
 ```bash
+npm run format
 npm run build
 npm start
 ```
+
+## Routes
+
+Public:
+
+- `/` — home page
+- `/sign-in` — login
+- `/sign-up` — registration
+
+Protected:
+
+- `/notes/filter/all` — all notes
+- `/notes/filter/:tag` — filtered notes
+- `/notes/:id` — note details
+- `/notes/action/create` — create note
+- `/profile` — current user profile
+- `/profile/edit` — edit profile
+
+## Architecture
+
+- `app/api` contains the provided Next.js proxy route handlers.
+- `lib/api/api.ts` contains the shared Axios instance with `withCredentials: true`.
+- `lib/api/clientApi.ts` contains browser/client functions.
+- `lib/api/serverApi.ts` contains server functions that forward request cookies.
+- `proxy.ts` and `middleware.ts` protect `/notes` and `/profile`.
+- Route groups keep authentication routes and private routes in separate layouts without changing public URLs.
+- TanStack Query manages client request state and cache invalidation.
+- CSS Modules provide component-scoped styles.
+
+## Vercel
+
+Set this production environment variable in Vercel:
+
+```env
+NEXT_PUBLIC_API_URL=https://your-project.vercel.app
+```
+
+Redeploy after changing the variable. Then test registration, login, notes, profile, logout, and direct detail-page navigation on the production URL.

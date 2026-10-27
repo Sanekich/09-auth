@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { createNote } from "@/lib/api";
+import { createNote } from "@/lib/api/clientApi";
 import { useNoteStore } from "@/lib/store/noteStore";
 import type { NoteTag } from "@/types/note";
 import css from "./NoteForm.module.css";
@@ -14,13 +14,7 @@ interface NoteFormValues {
   tag: NoteTag;
 }
 
-const TAGS: NoteTag[] = [
-  "Todo",
-  "Work",
-  "Personal",
-  "Meeting",
-  "Shopping",
-];
+const TAGS: NoteTag[] = ["Todo", "Work", "Personal", "Meeting", "Shopping"];
 
 export default function NoteForm() {
   const router = useRouter();
@@ -140,19 +134,11 @@ export default function NoteForm() {
       {error && <span className={css.error}>{error}</span>}
 
       <div className={css.actions}>
-        <button
-          type="button"
-          className={css.cancelButton}
-          onClick={() => router.back()}
-        >
+        <button type="button" className={css.cancelButton} onClick={() => router.back()}>
           Cancel
         </button>
 
-        <button
-          type="submit"
-          className={css.submitButton}
-          disabled={isPending}
-        >
+        <button type="submit" className={css.submitButton} disabled={isPending}>
           {isPending ? "Creating..." : "Create note"}
         </button>
       </div>
