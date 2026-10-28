@@ -5,15 +5,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { logout } from "@/lib/api/clientApi";
 import { useAuth } from "@/components/AuthProvider/AuthProvider";
+import { useAuthStore } from "@/lib/store/authStore";
 import css from "./AuthNavigation.module.css";
 
 export default function AuthNavigation() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const clearUser = useAuthStore((state) => state.clearUser);
   const { mutate, isPending } = useMutation({
     mutationFn: logout,
     onSuccess: () => {
+      clearUser();
       queryClient.clear();
       router.push("/sign-in");
       router.refresh();
@@ -27,6 +30,9 @@ export default function AuthNavigation() {
       <li className={css.navigationItem}>
         <Link className={css.navigationLink} href="/sign-in">
           Sign in
+        </Link>
+        <Link className={css.navigationLink} href="/sign-up">
+          Sign up
         </Link>
       </li>
     );

@@ -1,13 +1,26 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkSession } from "@/lib/api/serverApi";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPrivateRoute = pathname.startsWith("/notes") || pathname.startsWith("/profile");
   const isAuthRoute = pathname === "/sign-in" || pathname === "/sign-up";
-  const hasSession = Boolean(
-    request.cookies.get("accessToken")?.value || request.cookies.get("refreshToken")?.value,
-  );
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
+
+  let hasSession = Boolean(accessToken);
+
+  if (!accessToken && refreshToken) {
+    try {
+      const sessionResponse = await checkSession();
+      hasSession = sessionResponse.data.success;
+    } catch {
+      hasSession = false;
+    }
+  }
 
   if (isPrivateRoute && !hasSession) {
     return NextResponse.redirect(new URL("/sign-in", request.url));

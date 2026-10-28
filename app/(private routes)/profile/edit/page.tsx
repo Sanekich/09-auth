@@ -1,16 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { getMe, updateMe } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 import css from "./EditProfilePage.module.css";
 
 export default function EditProfilePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
   const [username, setUsername] = useState("");
-  const [avatar, setAvatar] = useState("");
 
   const {
     data: user,
@@ -23,8 +25,7 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (user) {
-      setUsername(user.username ?? "");
-      setAvatar(user.avatar ?? "");
+      setUsername(user.username);
     }
   }, [user]);
 
@@ -35,42 +36,50 @@ export default function EditProfilePage() {
   } = useMutation({
     mutationFn: updateMe,
     onSuccess: (updatedUser) => {
+      setUser(updatedUser);
       queryClient.setQueryData(["me"], updatedUser);
       router.push("/profile");
       router.refresh();
     },
   });
 
+  const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    mutate({ username });
+  };
+
   if (isLoading) return <p>Loading profile...</p>;
   if (isError || !user) return <p>Could not load profile.</p>;
 
   return (
     <main className={css.mainContent}>
-      <form
-        className={css.profileCard}
-        onSubmit={(event) => {
-          event.preventDefault();
-          mutate({ username, avatar });
-        }}
-      >
+      <form className={css.profileCard} onSubmit={handleSubmit}>
         <h1 className={css.formTitle}>Edit profile</h1>
-        <div className={css.usernameWrapper}>
-          <label htmlFor="username">Username</label>
-          <input
-            className={css.input}
-            id="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
+        {user.avatar && (
+          <Image
+            className={css.avatar}
+            src={user.avatar}
+            alt={`${user.email} avatar`}
+            width={120}
+            height={120}
           />
-        </div>
-        <div className={css.usernameWrapper}>
-          <label htmlFor="avatar">Avatar URL</label>
-          <input
-            className={css.input}
-            id="avatar"
-            value={avatar}
-            onChange={(event) => setAvatar(event.target.value)}
-          />
+        )}
+        <div className={css.profileInfo}>
+          <p>Email: {user.email}</p>
+          <div className={css.usernameWrapper}>
+            <label htmlFor="username">Username</label>
+            <input
+              className={css.input}
+              id="username"
+              name="username"
+              value={username}
+              onChange={handleUsernameChange}
+            />
+          </div>
         </div>
         {isMutationError && <p>Could not update profile.</p>}
         <div className={css.actions}>

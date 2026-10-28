@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 import css from "./SignUpPage.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const setUser = useAuthStore((state) => state.setUser);
 
   const { mutate, isPending, isError } = useMutation({
     mutationFn: register,
-    onSuccess: () => {
+    onSuccess: (user) => {
+      setUser(user);
       router.push("/notes/filter/all");
       router.refresh();
     },
@@ -34,6 +37,7 @@ export default function SignUpPage() {
           Email
           <input
             className={css.input}
+            name="email"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -44,6 +48,7 @@ export default function SignUpPage() {
           Password
           <input
             className={css.input}
+            name="password"
             type="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}

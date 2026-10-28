@@ -1,5 +1,5 @@
 import type { Note, NoteTag } from "@/types/note";
-import type { AuthCredentials, UpdateUserData, User } from "@/types/user";
+import type { AuthCredentials, User } from "@/types/user";
 import { api } from "./api";
 
 export interface FetchNotesParams {
@@ -33,7 +33,7 @@ export async function getMe(): Promise<User> {
   return data;
 }
 
-export async function updateMe(user: UpdateUserData): Promise<User> {
+export async function updateMe(user: Partial<Pick<User, "username">>): Promise<User> {
   const { data } = await api.patch<User>("/users/me", user);
   return data;
 }
