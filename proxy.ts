@@ -58,7 +58,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isAuthRoute && hasSession) {
-    const response = NextResponse.redirect(new URL("/profile", request.url));
+    const response = NextResponse.redirect(new URL("/", request.url));
     copyRefreshedCookies(response, refreshedSetCookie);
     return response;
   }
