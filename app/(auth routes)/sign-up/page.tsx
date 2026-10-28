@@ -18,7 +18,7 @@ export default function SignUpPage() {
     mutationFn: register,
     onSuccess: (user) => {
       setUser(user);
-      router.push("/notes/filter/all");
+      router.push("/profile");
       router.refresh();
     },
   });
